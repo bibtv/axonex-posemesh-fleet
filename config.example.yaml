@@ -1,0 +1,35 @@
+# Example configuration - copy to config.yaml and fill in your values
+
+posemesh:
+  # Get from Auki Console: https://console.auki.network
+  account: "your-email@example.com"
+  password: "your-password"
+  domain_id: "your-domain-id"
+  # API endpoints (usually these are auto-configured)
+  map_endpoint: "https://dsc.auki.network/spatial/crosssection"
+  raycast_endpoint: "https://dsc.auki.network/spatial/raycast"
+  navmesh_endpoint: "https://dsc.auki.network/spatial/restricttonavmesh"
+  routing_endpoint: "https://dsc.auki.network/spatial/pathfind"
+
+cactus:
+  # Cactus API (product search)
+  api_url: "https://cactus-public-api.lookingglassprotocol.com"
+  # API key if required
+
+yunji:
+  # Yunji robot API - contact Yunji for actual endpoint
+  api_url: "http://your-yunji-robot:8080"
+  robot_ids:
+    - "robot-001"
+    - "robot-002"
+    - "robot-003"
+
+hagall:
+  # Hagall relay server
+  # Self-host: https://github.com/aukilabs/hagall
+  # Or use Auki cloud
+  server: "ws://your-hagall-server:8080"
+  session: "retail-store-01"
+
+# Use mock clients for testing without real hardware
+use_mocks: false
