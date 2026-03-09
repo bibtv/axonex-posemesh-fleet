@@ -2,76 +2,118 @@
 
 Proof-of-concept for integrating Yunji robots with Auki PoseMesh for shared mapping and fleet coordination in retail environments.
 
-## Architecture
+## Two Architecture Options
+
+This POC supports **two integration approaches** depending on your needs:
+
+---
+
+## Option A: Centralized (REST API) — Recommended for Quick POC
+
+**Fleet Controller runs on server, communicates with robots via REST API**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Task Dispatcher                          │
-│   (Natural language: "Get Coke from aisle 3")             │
-└─────────────────────────┬─────────────────────────────────┘
-                          │
-          ┌───────────────┼───────────────┐
-          ▼               ▼               ▼
-   ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-   │   Cactus    │ │    PoseMesh │ │    Hagall   │
-   │   Search    │ │   Domain    │ │   (Relay)   │
-   │ Product→Pose│ │  Shared Map │ │ Fleet State │
-   └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
-          │               │               │
-          └───────────────┼───────────────┘
-                          ▼
-              ┌─────────────────────┐
-              │   Fleet Controller  │
-              │   (Route Planning)  │
-              └──────────┬──────────┘
-                         │
-       ┌─────────────────┼─────────────────┐
-       ▼                 ▼                 ▼
+│                     Fleet Controller                         │
+│                  (server/cloud)                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │   Cactus     │  │   PoseMesh   │  │    Hagall    │       │
+│  │   Search     │  │    Domain    │  │   (Relay)    │       │
+│  └──────────────┘  └──────────────┘  └──────────────┘       │
+└────────────────────────────┬────────────────────────────────┘
+                             │ HTTP/REST
+                             ▼
 ┌────────────┐    ┌────────────┐    ┌────────────┐
 │   Yunji    │    │   Yunji    │    │   Yunji    │
-│  Robot #1  │    │  Robot #2  │    │  Robot #3  │
-│ +PoseMesh   │    │ +PoseMesh   │    │ +PoseMesh   │
+│   Robot    │    │   Robot    │    │   Robot    │
+│ (built-in  │    │ (built-in  │    │ (built-in  │
+│   API)     │    │   API)     │    │   API)     │
 └────────────┘    └────────────┘    └────────────┘
 ```
 
-## Components
+**Files:**
+- `fleet_controller.py` — Main orchestration
+- `posemesh_connector.py` — PoseMesh API client
+- `cactus_client.py` — Product search
+- `yunji_client.py` — REST API wrapper
 
-### 1. Fleet Controller (`fleet_controller.py`)
-- Manages pool of Yunji robots
-- Assigns tasks based on availability and proximity
-- Tracks robot states (idle, busy, charging)
+**Pros:** Simple, quick to deploy, works with Yunji's existing API
 
-### 2. PoseMesh Connector (`posemesh_connector.py`)
-- Connects to Auki network
-- Handles domain map retrieval
-- Provides navmesh routing
+---
 
-### 3. Cactus Search Client (`cactus_client.py`)
-- Product search API
-- Returns product poses in domain coordinates
+## Option B: Distributed (ROS2) — Recommended for Full Integration
 
-### 4. Yunji API Wrapper (`yunji_client.py`)
-- REST API wrapper for Yunji robot commands
-- Start/stop navigation
-- Status queries
+**ROS nodes run on each robot, deeper control + sensor fusion**
 
-## Setup
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Fleet Controller                         │
+│                  (server/cloud)                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │   Cactus     │  │   PoseMesh   │  │    Hagall    │       │
+│  │   Search     │  │    Domain    │  │   (Relay)    │       │
+│  └──────────────┘  └──────────────┘  └──────────────┘       │
+└────────────────────────────┬────────────────────────────────┘
+                             │ WebSocket / ROS2 bridge
+                             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    ROBOT 1 (ROS2)                          │
+│  ┌─────────────────┐    ┌─────────────────┐                 │
+│  │ yunji_ros_node │◄───│posemesh_sensor │                  │
+│  │                 │    │    _node       │                  │
+│  └────────┬────────┘    └────────┬────────┘                 │
+│           │                      │                           │
+│           ▼                      ▼                          │
+│    ┌─────────────┐         ┌─────────────┐                  │
+│    │  Yunji     │         │  PoseMesh   │                  │
+│    │  Hardware  │         │   Network   │                  │
+│    └─────────────┘         └─────────────┘                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Files in `ros2/`:**
+- `yunji_ros_node.py` — ROS2 driver for Yunji
+- `posemesh_sensor_node.py` — PoseMesh integration
+- `launch/yunji_posemesh.launch.py` — Launch file
+- `package.xml`, `setup.py` — ROS2 package
+
+**Pros:** Full control, sensor fusion, works with ROS ecosystem
+
+---
+
+## Quick Start
+
+### Option A: REST Version
 
 ```bash
-# Install dependencies
+# Install
 pip install -r requirements.txt
 
 # Configure
 cp config.example.yaml config.yaml
-# Edit config.yaml with your credentials
 
-# Run POC
-python main.py --task "Find Coke in aisle 3"
+# Run
+python main.py --task "Find Coke"
+python main.py --status
 ```
 
-## Configuration
+### Option B: ROS2 Version
 
-Edit `config.yaml`:
+```bash
+# Copy ros2 package to your ROS2 workspace
+cp -r ros2 ~/colcon_ws/src/yunji_ros_driver
+
+# Build
+cd ~/colcon_ws
+colcon build --packages-select yunji_ros_driver
+
+# Run
+ros2 launch yunji_ros_driver yunji_posemesh.launch.py
+```
+
+---
+
+## Configuration
 
 ```yaml
 posemesh:
@@ -93,20 +135,26 @@ hagall:
   session: "retail-store-01"
 ```
 
+---
+
 ## API Keys Required
 
 1. **Auki Console** - https://console.auki.network
 2. **Cactus API** - Built into auki_robotics_cactus_search
-3. **Yunji API** - From Yunji documentation
+3. **Yunji API** - Contact Yunji (400-608-0917)
+
+---
 
 ## Next Steps
 
 1. [ ] Get Auki Console credentials
 2. [ ] Set up PoseMesh domain for test store
-3. [ ] Obtain Yunji robot API access
-4. [ ] Deploy hagall server (self-hosted or cloud)
-5. [ ] Test single robot integration
+3. [ ] Obtain Yunji API access/documentation
+4. [ ] Deploy hagall server
+5. [ ] Test with single robot
 6. [ ] Expand to multi-robot fleet
+
+---
 
 ## References
 

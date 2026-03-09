@@ -1,0 +1,16 @@
+{
+  "name": "yunji_ros_driver",
+  "version": "0.1.0",
+  "description": "ROS2 driver for Yunji robots with PoseMesh integration",
+  "maintainer": "bibtv",
+  "license": "MIT",
+  "dependencies": {
+    "rclpy": "^3.0.0",
+    "geometry_msgs": "^4.0.0",
+    "nav_msgs": "^4.0.0",
+    "std_msgs": "^4.0.0"
+  },
+  "runtime": {
+    "python": "python3"
+  }
+}
