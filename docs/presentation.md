@@ -142,10 +142,11 @@
 
 ## AI-Powered Fleet Intelligence
 
-1. PoseMesh tracks: robot positions + customer locations
-2. Real-time demand calculation
-3. Auto-rebalance robots to high-need zones
-4. Continuous optimization
+1. **PoseMesh** — Robot positions + navigation
+2. **Power Workplace Optimus IoT** — Occupancy sensing per zone
+3. Real-time demand calculation
+4. Auto-rebalance robots to high-need zones
+5. Continuous optimization
 
 ---
 
@@ -157,7 +158,8 @@ Demand Spike Detected! +340%
     ↓
 ┌─────────────────────┐
 │  Analyze:           │
-│  • Robot positions  │
+│  • Robot positions  │ ← PoseMesh
+│  • Occupancy        │ ← Power Workplace Optimus IoT
 │  • Customer heatmap │
 │  • Task queue       │
 └──────────┬──────────┘
@@ -173,6 +175,20 @@ Demand Spike Detected! +340%
            ▼
 🤖🤖🤖 Optimized!
 ```
+
+---
+
+# Slide 13b: Data Integration
+
+## Multiple Data Sources
+
+| Source | Data |
+|--------|------|
+| **PoseMesh** | Robot positions, nav mesh, customer tracking |
+| **Power Workplace Optimus IoT** | Occupancy per zone, people count, dwell time |
+| **Axonex Zero** | Task queue, robot status, battery |
+
+**Better decisions with combined data!**
 
 ---
 
@@ -208,12 +224,13 @@ Demand Spike Detected! +340%
 
 # Slide 16: Why It Works
 
-## PoseMesh Enables:
+## PoseMesh + Optimus IoT Enables:
 
 1. **Shared Awareness** — All robots see each other
-2. **Precise Positioning** — centimeter accuracy
-3. **Real-Time Updates** — sub-second latency
-4. **NavMesh Pathfinding** — obstacle avoidance
+2. **Occupancy Intelligence** — Real-time zone occupancy
+3. **Precise Positioning** — centimeter accuracy
+4. **Real-Time Updates** — sub-second latency
+5. **NavMesh Pathfinding** — obstacle avoidance
 
 ---
 

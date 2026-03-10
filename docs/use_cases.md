@@ -355,56 +355,88 @@ As customer flow changes:
 │  │  • Calculate optimal distribution                        │  │
 │  │  • Generate movement commands                            │  │
 │  └──────────────────────────────────────────────────────────┘  │
-└────────────────────────────┬────────────────────────────────────┘
-                             │
-         ┌───────────────────┼───────────────────┐
-         │                   │                   │
-         ▼                   ▼                   ▼
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   Robot A       │  │   Robot B       │  │   Robot C       │
-│                 │  │                 │  │                 │
-│ ┌─────────────┐ │  │ ┌─────────────┐ │  │ ┌─────────────┐ │
-│ │ PoseMesh    │ │  │ │ PoseMesh    │ │  │ │ PoseMesh    │ │
-│ │ Client      │ │  │ │ Client      │ │  │ │ Client      │ │
-│ └─────────────┘ │  │ └─────────────┘ │  │ └─────────────┘ │
-└────────┬────────┘  └────────┬────────┘  └────────┬────────┘
-         │                    │                    │
-         └────────────────────┼────────────────────┘
-                              │
-                              ▼
-                   ┌─────────────────────┐
-                   │    PoseMesh Domain   │
-                   │  (Shared Map +       │
-                   │   Positions)         │
-                   └─────────────────────┘
+└────────────┬────────────────────────────────────────────────────┘
+             │
+             │ Data Inputs
+             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Data Sources                                  │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │    PoseMesh    │  │ Power Workplace │  │    Task Queue   │  │
+│  │   Domain       │  │ Optimus IoT     │  │   (Internal)   │  │
+│  │                │  │                 │  │                 │  │
+│  │ • Robot pos    │  │ • Occupancy     │  │ • Pending tasks │  │
+│  │ • Nav mesh     │  │ • Zone metrics  │  │ • Priority      │  │
+│  │ • Customer     │  │ • People count  │  │ • Assignment    │  │
+│  │   positions    │  │                 │  │                 │  │
+│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘  │
+└───────────┼────────────────────┼────────────────────┼───────────┘
+            │                     │                    │
+            ▼                     ▼                    ▼
+         ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+         │   Robot A       │  │   Robot B       │  │   Robot C       │
+         │                 │  │                 │  │                 │
+         │ ┌─────────────┐ │  │ ┌─────────────┐ │  │ ┌─────────────┐ │
+         │ │ PoseMesh    │ │  │ │ PoseMesh    │ │  │ │ PoseMesh    │ │
+         │ │ Client      │ │  │ │ Client      │ │  │ │ Client      │ │
+         │ └─────────────┘ │  │ └─────────────┘ │  │ └─────────────┘ │
+         └────────┬────────┘  └────────┬────────┘  └────────┬────────┘
+                  │                    │                    │
+                  └────────────────────┼────────────────────┘
+                                       │
+                                       ▼
+                            ┌─────────────────────┐
+                            │    PoseMesh Domain   │
+                            │  (Shared Map +       │
+                            │   Positions)         │
+                            └─────────────────────┘
 ```
+
+### Power Workplace Optimus IoT Integration
+
+The **Power Workplace Optimus IoT Platform** provides real-time occupancy sensing for store regions:
+
+- **Occupancy Sensors** — People counting per zone (entrance, aisles, checkout)
+- **Zone Metrics** — Dwell time, foot traffic patterns
+- **Heatmap Generation** — Real-time density maps
+- **Historical Data** — Trend analysis for demand prediction
+
+This data complements PoseMesh robot positions with customer/occupant information for smarter rebalancing decisions.
 
 ### Rebalancing Algorithm
 
 ```
 1. INPUT: Current state
-   - Robot positions (x, y)
+   - Robot positions (x, y)           [from PoseMesh]
    - Robot status (idle/busy/charging)
-   - Customer positions (heatmap)
+   - Occupancy per zone               [from Power Workplace Optimus IoT]
+   - Customer positions (heatmap)     [from PoseMesh + Optimus]
    - Task queue
 
 2. CALCULATE: Demand scores per zone
-   demand[zone] = customers[zone] + pending_tasks[zone]
+   demand[zone] = customers[zone] + pending_tasks[zone] + occupancy[zone]
+   // Weight: Optimus IoT data can adjust priority based on dwell time
 
 3. OPTIMIZE: Minimize total travel + maximize coverage
    For each robot:
      - Find zone with highest demand within range
      - Consider battery constraints
      - Avoid robot-robot collisions
+     - Factor in occupancy trends (predictive)
 
 4. EXECUTE: Send movement commands
    - Move to optimal zone
    - Update status
 
 5. LOOP: Every 30 seconds
-   - Re-evaluate
+   - Re-evaluate (PoseMesh + Optimus IoT)
    - Adjust if needed
 ```
+
+**Data Fusion:** Axonex Zero combines:
+- **PoseMesh** — Precise robot positioning, navigation mesh
+- **Power Workplace Optimus IoT** — People count, zone occupancy, dwell time
+- **Internal Task Queue** — Pending robot assignments
 
 ---
 
