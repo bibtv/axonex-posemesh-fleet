@@ -31,6 +31,24 @@ rice_robotics:
     - "rice-001"
     - "rice-002"
 
+optimus_iot:
+  # Power Workplace Optimus IoT Platform
+  # Provides occupancy sensing per zone
+  api_url: "http://your-optimus-server:8080"
+  api_key: "your-optimus-api-key"
+  enabled: true
+  zones:
+    - name: "entrance"
+      id: "zone_entrance"
+    - name: "aisle_1_3"
+      id: "zone_aisle_1_3"
+    - name: "aisle_4_6"
+      id: "zone_aisle_4_6"
+    - name: "aisle_7_9"
+      id: "zone_aisle_7_9"
+    - name: "checkout"
+      id: "zone_checkout"
+
 hagall:
   # Hagall relay server
   # Self-host: https://github.com/aukilabs/hagall
