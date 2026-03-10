@@ -24,6 +24,13 @@ axonex_m:
     - "robot-002"
     - "robot-003"
 
+rice_robotics:
+  # Rice Robotics platforms (R1, R2, etc.)
+  api_url: "http://your-rice-robot:8080"
+  robot_ids:
+    - "rice-001"
+    - "rice-002"
+
 hagall:
   # Hagall relay server
   # Self-host: https://github.com/aukilabs/hagall

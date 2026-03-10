@@ -1,6 +1,10 @@
 # Axonex Fleet Management POC
 
-Proof-of-concept for integrating Axonex M series robots (Yunji chassis) with Auki PoseMesh for shared mapping and fleet coordination in retail environments.
+Proof-of-concept for integrating multiple robot platforms with Auki PoseMesh for shared mapping and fleet coordination in retail environments.
+
+**Supported Robots:**
+- **Axonex M series** — Robots with Yunji chassis
+- **Rice Robotics** — R1, R2, and other Rice Robotics platforms
 
 ## Two Architecture Options
 
@@ -24,10 +28,10 @@ This POC supports **two integration approaches** depending on your needs:
                              │ HTTP/REST
                              ▼
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│  Axonex M   │    │  Axonex M   │    │  Axonex M   │
-│   series    │    │   series    │    │   series    │
-│ (Yunji      │    │ (Yunji      │    │ (Yunji      │
-│  chassis)   │    │  chassis)   │    │  chassis)   │
+│  Axonex M   │    │  Axonex M   │    │    Rice      │
+│   series    │    │   series    │    │  Robotics    │
+│ (Yunji      │    │ (Yunji      │    │    (R1/R2)   │
+│  chassis)   │    │  chassis)   │    │              │
 └──────────────┘    └──────────────┘    └──────────────┘
 ```
 
@@ -131,6 +135,13 @@ axonex_m:
     - "robot-001"
     - "robot-002"
 
+rice_robotics:
+  # Rice Robotics platforms (R1, R2, etc.)
+  api_url: "http://your-rice-robot:8080"
+  robot_ids:
+    - "rice-001"
+    - "rice-002"
+
 hagall:
   server: "ws://your-hagall-server:8080"
   session: "retail-store-01"
@@ -143,6 +154,7 @@ hagall:
 1. **Auki Console** - https://console.auki.network
 2. **Cactus API** - Built into auki_robotics_cactus_search
 3. **Yunji API** - Contact Yunji (400-608-0917)
+4. **Rice Robotics API** - Contact Rice Robotics
 
 ---
 
