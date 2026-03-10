@@ -1,6 +1,6 @@
-# Yunji + PoseMesh Fleet Management POC
+# Axonex Fleet Management POC
 
-Proof-of-concept for integrating Yunji robots with Auki PoseMesh for shared mapping and fleet coordination in retail environments.
+Proof-of-concept for integrating Axonex M series robots (Yunji chassis) with Auki PoseMesh for shared mapping and fleet coordination in retail environments.
 
 ## Two Architecture Options
 
@@ -10,11 +10,11 @@ This POC supports **two integration approaches** depending on your needs:
 
 ## Option A: Centralized (REST API) — Recommended for Quick POC
 
-**Fleet Controller runs on server, communicates with robots via REST API**
+**Axonex Zero Basic Platform runs on server, communicates with robots via REST API**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Fleet Controller                         │
+│              Axonex Zero Basic Platform                     │
 │                  (server/cloud)                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
 │  │   Cactus     │  │   PoseMesh   │  │    Hagall    │       │
@@ -23,12 +23,12 @@ This POC supports **two integration approaches** depending on your needs:
 └────────────────────────────┬────────────────────────────────┘
                              │ HTTP/REST
                              ▼
-┌────────────┐    ┌────────────┐    ┌────────────┐
-│   Yunji    │    │   Yunji    │    │   Yunji    │
-│   Robot    │    │   Robot    │    │   Robot    │
-│ (built-in  │    │ (built-in  │    │ (built-in  │
-│   API)     │    │   API)     │    │   API)     │
-└────────────┘    └────────────┘    └────────────┘
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│  Axonex M   │    │  Axonex M   │    │  Axonex M   │
+│   series    │    │   series    │    │   series    │
+│ (Yunji      │    │ (Yunji      │    │ (Yunji      │
+│  chassis)   │    │  chassis)   │    │  chassis)   │
+└──────────────┘    └──────────────┘    └──────────────┘
 ```
 
 **Files:**
@@ -47,7 +47,7 @@ This POC supports **two integration approaches** depending on your needs:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Fleet Controller                         │
+│              Axonex Zero Basic Platform                     │
 │                  (server/cloud)                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
 │  │   Cactus     │  │   PoseMesh   │  │    Hagall    │       │
@@ -57,7 +57,7 @@ This POC supports **two integration approaches** depending on your needs:
                              │ WebSocket / ROS2 bridge
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    ROBOT 1 (ROS2)                          │
+│               ROBOT 1 (Axonex M series - ROS2)            │
 │  ┌─────────────────┐    ┌─────────────────┐                 │
 │  │ yunji_ros_node │◄───│posemesh_sensor │                  │
 │  │                 │    │    _node       │                  │
@@ -65,8 +65,8 @@ This POC supports **two integration approaches** depending on your needs:
 │           │                      │                           │
 │           ▼                      ▼                          │
 │    ┌─────────────┐         ┌─────────────┐                  │
-│    │  Yunji     │         │  PoseMesh   │                  │
-│    │  Hardware  │         │   Network   │                  │
+│    │   Yunji    │         │  PoseMesh   │                  │
+│    │  Chassis   │         │   Network   │                  │
 │    └─────────────┘         └─────────────┘                  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -124,8 +124,9 @@ posemesh:
 cactus:
   api_url: "https://cactus-public-api.lookingglassprotocol.com"
 
-yunji:
-  api_url: "http://your-yunji-robot:8080"
+axonex_m:
+  # Axonex M series (Yunji chassis)
+  api_url: "http://your-axonex-m-robot:8080"
   robot_ids:
     - "robot-001"
     - "robot-002"

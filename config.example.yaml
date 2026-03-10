@@ -16,9 +16,9 @@ cactus:
   api_url: "https://cactus-public-api.lookingglassprotocol.com"
   # API key if required
 
-yunji:
-  # Yunji robot API - contact Yunji for actual endpoint
-  api_url: "http://your-yunji-robot:8080"
+axonex_m:
+  # Axonex M series (Yunji chassis) API
+  api_url: "http://your-axonex-m-robot:8080"
   robot_ids:
     - "robot-001"
     - "robot-002"
